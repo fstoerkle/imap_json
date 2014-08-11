@@ -1,0 +1,8 @@
+{
+    "mailbox"       : "Work",
+    "host"          : "IMAP HOST",
+    "port"          : 993,
+    "use_ssl"       : true,
+    "username"      : "IMAP USERNAME",
+    "output_dir"    : "data"
+}

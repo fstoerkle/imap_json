@@ -36,3 +36,6 @@ build/
 .rvmrc
 
 
+
+# Project specific
+config.json
