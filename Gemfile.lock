@@ -2,9 +2,11 @@ GEM
   remote: https://rubygems.org/
   specs:
     highline (1.6.21)
+    yajl-ruby (1.2.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   highline
+  yajl-ruby
