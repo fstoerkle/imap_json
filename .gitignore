@@ -39,3 +39,4 @@ build/
 
 # Project specific
 *.config.json
+/data/

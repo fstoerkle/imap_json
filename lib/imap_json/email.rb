@@ -1,17 +1,30 @@
 
+require 'mail'
 require 'yajl'
 
 class Email
-  def initialize(mail)
-    @mail = mail
+  FIELDS_TO_EXPORT = [
+    'subject', 'from', 'to'
+  ]
+
+  attr_reader :uid
+
+  def initialize(uid, raw_mail)
+    @uid = uid
+    @mail = Mail.new raw_mail
   end
 
   def to_json
-    "{}"
+    json = {}
+
+    FIELDS_TO_EXPORT.each { |f| json[f] = @mail[f] }
+
+    Yajl::Encoder.encode(json)
   end
 
   def to_s
-    "#{@mail.from.first} --> #{@mail.to.join ', '}: #{@mail.subject}"
+    # "#{@mail.from.first} --> #{@mail.to.join ', '}: #{@mail.subject}"
+    @mail.to_s
   end
 end
 
