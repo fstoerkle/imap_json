@@ -2,7 +2,7 @@
 require 'yajl'
 
 module Configuration
-  @@configuration_file = './config.json'
+  @@configuration_file = './imap_json.config.json'
 
   @@config = nil
 

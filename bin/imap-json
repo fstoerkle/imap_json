@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+puts $:
+
+
+exit
+
+require 'imap_json'
+
+ImapJson.run
