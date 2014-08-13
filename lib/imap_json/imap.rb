@@ -8,12 +8,13 @@ require_relative 'utils'
 class Imap
   RFC822 = 'RFC822'
 
-  def initialize
-    @imap = Net::IMAP.new Configuration['host'], Configuration['port'], Configuration['use_ssl']
+  def initialize(config)
+    @config = config
+    @imap = Net::IMAP.new @config['host'], @config['port'], @config['use_ssl']
     begin
-      @imap.login Configuration['username'], Utils.read_password
+      @imap.login @config['username'], Utils.read_password
     rescue Net::IMAP::NoResponseError => error
-      Utils.fatal "IMAP: #{error.message}"
+      Utils.fatal "IMAP:#{error.message}"
     end
   end
 

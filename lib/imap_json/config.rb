@@ -2,15 +2,11 @@
 require 'yajl'
 
 module Configuration
-  @@configuration_file = './imap_json.config.json'
-
+  CONFIG_FILE = File.new('./imap_json.config.json', 'r')
+  
   @@config = nil
 
-  def self.[](key)
-    if @@config.nil?
-      @@config = Yajl::Parser.parse File.new(@@configuration_file, 'r')
-    end
-
-    @@config[key]
+  def self.config
+    @@config = Yajl::Parser.parse CONFIG_FILE if @@config.nil?
   end
 end
