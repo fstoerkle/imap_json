@@ -2,8 +2,8 @@
 require 'yajl'
 
 class Email
-  def initialize(raw_mail)
-    @raw_mail = raw_mail
+  def initialize(mail)
+    @mail = mail
   end
 
   def to_json

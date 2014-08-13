@@ -1,17 +1,19 @@
 
+require 'mail'
 require 'net/imap'
 
-require_relative './config.rb'
-require_relative './password.rb'
+require_relative 'config'
+require_relative 'utils'
 
 class Imap
+  RFC822 = 'RFC822'
+
   def initialize
     @imap = Net::IMAP.new Configuration['host'], Configuration['port'], Configuration['use_ssl']
     begin
-      @imap.login Configuration['username'], Password.get
+      @imap.login Configuration['username'], Utils.read_password
     rescue Net::IMAP::NoResponseError => error
-      $stderr.puts "IMAP: #{error.message}"
-      exit 1
+      Utils.fatal "IMAP: #{error.message}"
     end
   end
 
@@ -19,10 +21,10 @@ class Imap
     @imap.list(mailbox || '', '*')
   end
 
-  def messages_for(mailbox)
+  def mails_for(mailbox)
     @imap.examine mailbox
     @imap.uid_search('ALL').each do |uid|
-      yield @imap.uid_fetch(uid,'RFC822').first.attr['RFC822']
+      yield Mail.new(@imap.uid_fetch(uid, RFC822).first.attr[RFC822])
     end
   end
 end

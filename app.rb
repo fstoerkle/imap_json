@@ -1,18 +1,19 @@
 #!/usr/bin/env ruby
 
-require_relative 'lib/email.rb'
-require_relative 'lib/files.rb'
-require_relative 'lib/imap.rb'
+
+require_relative 'lib/config'
+require_relative 'lib/email'
+require_relative 'lib/files'
+require_relative 'lib/imap'
+
+
 
 imap = Imap.new
 imap.list(Configuration['mailbox']).each do |mailbox|
-  imap.messages_for(mailbox.name) do |message|
-    puts message
-    exit
+  imap.mails_for(mailbox.name) do |mail|
+    puts mail.subject
   end
-  exit
 end
-
 
 
 # Files.create_directories
