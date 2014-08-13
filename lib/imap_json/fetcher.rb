@@ -15,8 +15,8 @@ class Fetcher
     @imap = Imap.new @config
 
     @imap.list(@config['mailbox']).each do |mailbox|
-      @imap.mails_for(mailbox.name) do |mail|
-        puts mail.subject
+      @imap.mails_for(mailbox.name) do |email|
+        puts email
       end
     end 
   end

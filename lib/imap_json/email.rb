@@ -7,7 +7,11 @@ class Email
   end
 
   def to_json
-    
+    "{}"
+  end
+
+  def to_s
+    "#{@mail.from.first} --> #{@mail.to.join ', '}: #{@mail.subject}"
   end
 end
 

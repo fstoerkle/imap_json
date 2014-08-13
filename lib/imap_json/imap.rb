@@ -2,8 +2,8 @@
 require 'mail'
 require 'net/imap'
 
-require_relative 'config'
-require_relative 'utils'
+require 'imap_json/email.rb'
+require 'imap_json/utils'
 
 class Imap
   RFC822 = 'RFC822'
@@ -25,7 +25,8 @@ class Imap
   def mails_for(mailbox)
     @imap.examine mailbox
     @imap.uid_search('ALL').each do |uid|
-      yield Mail.new(@imap.uid_fetch(uid, RFC822).first.attr[RFC822])
+      raw_mail = @imap.uid_fetch(uid, RFC822).first.attr[RFC822]
+      yield Email.new(Mail.new(raw_mail))
     end
   end
 end
