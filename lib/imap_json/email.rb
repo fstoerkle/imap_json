@@ -9,9 +9,8 @@ class Email
     :to, :cc, :bcc,
     :subject,
     :date,
-    :message_id,
-    :body
-  ]
+    :message_id
+  ] # :body is handled separately
 
   attr_reader :uid
   attr_reader :mailbox
@@ -29,11 +28,29 @@ class Email
 
   def to_hash
     obj = Hash.new
+
     FIELDS_TO_EXPORT.each do |field|
-      case field
-      when :body then   obj[field] = @mail.body.decoded
-      else              obj[field] = @mail[field]
+      obj[field] = @mail[field]
+    end
+
+    if @mail.multipart?
+      @mail.parts.each do |part|
+        case part.content_type
+        when /^text\/plain/
+          obj[:body] = part.body.decoded
+        when /^text\/html/
+          obj[:bodyHtml] = part.body.decoded
+        else
+          obj[:parts] = [] if obj[:parts].nil?
+          obj[:parts] << {
+            :content_type => part.content_type,
+            :content_type_parameters => part.content_type_parameters,
+            :body => part.body.decoded
+          }
+        end
       end
+    else
+      obj[:body] = @mail.body.decoded
     end
 
     obj
