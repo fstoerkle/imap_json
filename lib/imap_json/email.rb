@@ -1,9 +1,16 @@
 
 require 'mail'
 
+require 'imap_json/files'
+
 class Email
   FIELDS_TO_EXPORT = [
-    'subject', 'from', 'to'
+    :from,
+    :to, :cc, :bcc,
+    :subject,
+    :date,
+    :message_id,
+    :body
   ]
 
   attr_reader :uid
@@ -22,7 +29,13 @@ class Email
 
   def to_hash
     obj = Hash.new
-    FIELDS_TO_EXPORT.each { |f| obj[f] = @mail[f] }
+    FIELDS_TO_EXPORT.each do |field|
+      case field
+      when :body then   obj[field] = @mail.body.decoded
+      else              obj[field] = @mail[field]
+      end
+    end
+
     obj
   end
 
