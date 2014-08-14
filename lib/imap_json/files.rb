@@ -20,8 +20,13 @@ module Files
   end
 
   def self.save(dir_name, email)
-    path = build_path(create_sub_dir(:raw, dir_name), email.uid)
+    path = build_path(create_sub_dir(:raw, dir_name), email.uid, 'txt')
     File.write(path, email.to_s)
+  end
+
+  def self.save_attachement(dir_name, email, filename, contents)
+    path = build_path(create_sub_dir(:json, "#{dir_name}.#{email.uid}"), filename)
+    File.write(path, contents)
   end
 
 private
@@ -33,7 +38,7 @@ private
 
   def self.create_sub_dir(parent_name, sub_dir)
     path = @@directories[parent_name.to_sym]
-    
+
     sub_dir.split('.').each do |dir|
       path = File.join path, dir
       create_dir path
@@ -42,7 +47,9 @@ private
     path
   end
 
-  def self.build_path(directory_path, filename, extension='txt')
-    File.join(directory_path, "#{filename}.#{extension}")
+  def self.build_path(directory_path, filename, extension=nil)
+    filename = "#{filename}.#{extension}" unless extension.nil?
+    
+    File.join directory_path, filename
   end
 end
