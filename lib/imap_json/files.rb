@@ -1,32 +1,48 @@
 
-require_relative './config.rb'
+require 'yajl'
 
 module Files
   @@directories = Hash.new
   
-  def self.set_output_directory(output_directory)
-    @@directories[:output] = output_directory
-    @@directories[:email] = "#{output_directory}/emails"
-    @@directories[:raw] = "#{output_directory}/raw" 
+  def self.setup(output_directory)
+    @@directories[:output] = File.expand_path output_directory
+    @@directories[:json] = File.join output_directory, 'json'
+    @@directories[:raw] = File.join output_directory, 'raw'
+
+    @@directories.values.each { |d| create_dir d }
   end
 
-  def self.create_directories
-    @@directories.values.each do |directory|
-      create_if_not_exists directory
+  def self.save_json(dir_name, email)
+    path = build_path(create_sub_dir(:json, dir_name), email.uid, 'json')
+    File.open(path, 'w') do |file|
+      Yajl::Encoder.encode(email.to_hash, file, :pretty => true)
     end
   end
 
-  def self.save_json(uid, json)
-    path = File.join(@@directories[:email], "#{uid}.json")
-    File.write(path, json)
-  end
-
-  def self.save_raw(raw_mail)
-
+  def self.save(dir_name, email)
+    path = build_path(create_sub_dir(:raw, dir_name), email.uid)
+    File.write(path, email.to_s)
   end
 
 private
-  def self.create_if_not_exists(directory_name)
-    Dir.mkdir directory_name unless Dir.exists? directory_name
+  def self.create_dir(directory_path)
+    Dir.mkdir directory_path unless Dir.exists? directory_path
+
+    directory_path
+  end
+
+  def self.create_sub_dir(parent_name, sub_dir)
+    path = @@directories[parent_name.to_sym]
+    
+    sub_dir.split('.').each do |dir|
+      path = File.join path, dir
+      create_dir path
+    end
+
+    path
+  end
+
+  def self.build_path(directory_path, filename, extension='txt')
+    File.join(directory_path, "#{filename}.#{extension}")
   end
 end

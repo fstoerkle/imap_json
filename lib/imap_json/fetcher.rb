@@ -7,19 +7,22 @@ class Fetcher
   def initialize(config)
     @config = config
 
-    Files.set_output_directory @config['output_dir']
-
     Utils.console 
     Utils.console('Creating output directories') do 
-      Files.create_directories
+      Files.setup @config['output_dir']
     end
 
-    @imap = Imap.new @config
+    Utils.console('Connecting to IMAP server') do
+      @imap = Imap.new @config
+    end
 
+    fetch!
+  end
+
+  def fetch!
     @imap.list(@config['mailbox']).each do |mailbox|
       @imap.mails_for(mailbox.name) do |email|
-        Files.save_json email.uid, email.to_json
-        exit
+        email.save!
       end
     end 
   end

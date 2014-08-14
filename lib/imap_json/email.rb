@@ -1,6 +1,5 @@
 
 require 'mail'
-require 'yajl'
 
 class Email
   FIELDS_TO_EXPORT = [
@@ -8,22 +7,26 @@ class Email
   ]
 
   attr_reader :uid
+  attr_reader :mailbox
 
-  def initialize(uid, raw_mail)
+  def initialize(uid, raw_mail, mailbox)
     @uid = uid
+    @mailbox = mailbox
     @mail = Mail.new raw_mail
   end
 
-  def to_json
-    json = {}
+  def save!
+    Files.save @mailbox, self
+    Files.save_json @mailbox, self
+  end
 
-    FIELDS_TO_EXPORT.each { |f| json[f] = @mail[f] }
-
-    Yajl::Encoder.encode(json)
+  def to_hash
+    obj = Hash.new
+    FIELDS_TO_EXPORT.each { |f| obj[f] = @mail[f] }
+    obj
   end
 
   def to_s
-    # "#{@mail.from.first} --> #{@mail.to.join ', '}: #{@mail.subject}"
     @mail.to_s
   end
 end

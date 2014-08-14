@@ -24,7 +24,8 @@ class Imap
   def mails_for(mailbox)
     @imap.examine mailbox
     @imap.uid_search('ALL').each do |uid|
-      yield Email.new(uid, @imap.uid_fetch(uid, RFC822).first.attr[RFC822])
+      email = Email.new(uid, @imap.uid_fetch(uid, RFC822).first.attr[RFC822], mailbox)
+      yield email
     end
   end
 end
