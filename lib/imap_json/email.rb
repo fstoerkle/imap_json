@@ -33,20 +33,11 @@ class Email
         part.content_type =~ R_TEXT_PLAIN or part.content_type =~ R_TEXT_HTML
       end.each do |part|
         filename = part.content_type_parameters['name']
-        
+
         unless filename.nil?
           Files.save_attachement @mailbox, self, filename, part.body.decoded
         end
       end
-
-
-
-      # obj[:parts] = [] if obj[:parts].nil?
-      #   obj[:parts] << {
-      #     :content_type => part.content_type,
-      #     :content_type_parameters => part.content_type_parameters,
-      #     :body => part.body.decoded
-      #   }
     end
   end
 
@@ -56,6 +47,7 @@ class Email
     FIELDS_TO_EXPORT.each { |field| obj[field] = @mail[field] }
 
     if @mail.multipart?
+
       @mail.parts.each do |part|
         case part.content_type
         when R_TEXT_PLAIN
